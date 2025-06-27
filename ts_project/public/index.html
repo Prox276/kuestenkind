@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Sensordaten</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>Temperatur & pH-Werte</h1>
+  <div style="width: 90%; height: 70vh;">
+    <canvas id="sensorChart"></canvas>
+  </div>
+
+  <script>
+    async function fetchData() {
+      const response = await fetch('/api/data');
+      return response.json();
+    }
+
+    function renderChart(data) {
+      const ctx = document.getElementById('sensorChart').getContext('2d');
+      const timestamps = data.map(d => new Date(d.timestamp).toLocaleTimeString());
+      
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: timestamps,
+          datasets: [
+            {
+              label: 'Temperatur (°C)',
+              data: data.map(d => d.temperature),
+              borderColor: 'rgb(255, 99, 132)',
+              tension: 0.1
+            },
+            {
+              label: 'pH-Wert',
+              data: data.map(d => d.ph),
+              borderColor: 'rgb(54, 162, 235)',
+              tension: 0.1,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              type: 'linear',
+              display: true,
+              position: 'left',
+              title: { text: 'Temperatur (°C)', display: true }
+            },
+            y1: {
+              type: 'linear',
+              display: true,
+              position: 'right',
+              title: { text: 'pH-Wert', display: true },
+              min: 0,
+              max: 14,
+              grid: { drawOnChartArea: false }
+            }
+          }
+        }
+      });
+    }
+
+    async function init() {
+      try {
+        const data = await fetchData();
+        renderChart(data);
+      } catch (error) {
+        console.error('Fehler beim Laden der Daten:', error);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
