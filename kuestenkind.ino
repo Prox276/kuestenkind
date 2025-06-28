@@ -1,11 +1,29 @@
+/*
+* Projekt: ESP8266 Datenlogger
+* Beschreibung: Erfasst und sendet Sensordaten an einen Webserver
+*
+* Autor: Prox
+* CoAutor: Deiras
+*
+* Erstellt am: 25.06.2025 
+* Zuletzt aktualisiert: 28.06.2025
+*
+*/
+
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
 
 // DS18B20 Temperature Sensor
 #define ONE_WIRE_BUS D4
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature DS18B20(&oneWire);
 float temperature;
+
+// Hier die Platzhalter fürs Wlan ersetzen
+const char* ssid = "DEIN_WLAN";
+const char* password = "DEIN_PASSWORT";
 
 // pH Sensor
 #define SensorPin A0
@@ -76,6 +94,39 @@ void loop() {
 
     samplingTime = currentMillis;
   }
+
+// wlanschrott
+void setup() {
+  Serial.begin(115200);
+  WiFi.begin(ssid, password);
+  
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\nVerbunden!");
+}
+
+void loop() {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    
+    // WICHTIG: hier die IP deines Rechners eintragen
+    http.begin("http://192.168.1.100:8000/api"); 
+    http.addHeader("Content-Type", "text/plain");
+    
+    int httpCode = http.POST("Daten vom ESP8266");
+    
+    if (httpCode > 0) {
+      Serial.printf("Woaw! Code: %d\n", httpCode);
+    } else {
+      Serial.printf("Fehler: %s\n", http.errorToString(httpCode).c_str());
+    }
+    
+    http.end();
+  }
+  delay(5000); // Alle 5 Sekunden senden
+}
 
   // Print temperature + pH every printInterval
   if (currentMillis - printTime > printInterval) {
