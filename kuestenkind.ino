@@ -24,6 +24,7 @@ float temperature;
 // Hier die Platzhalter fürs Wlan ersetzen
 const char* ssid = "DEIN_WLAN";
 const char* password = "DEIN_PASSWORT";
+const char* server = "http://192.168.57.171:3000"; //IPV4 Adresse kann in cmd mit Befehl ipconfig werden
 
 // pH Sensor
 #define SensorPin A0
@@ -109,20 +110,22 @@ void setup() {
 
 void loop() {
   if (WiFi.status() == WL_CONNECTED) {
+    
+    WiFiClient client;
     HTTPClient http;
     
-    // WICHTIG: hier die IP deines Rechners eintragen
-    http.begin("http://192.168.1.100:8000/api"); 
-    http.addHeader("Content-Type", "text/plain");
+    http.begin(client, server + "/api/add");
+    http.addHeader("Content-Type", "application/json");
     
-    int httpCode = http.POST("Daten vom ESP8266");
+    String jsonData = "{\"temperature\":" + String(temperature) + ",\"pHValue\":" + String(pHValue) + "}";
     
-    if (httpCode > 0) {
-      Serial.printf("Woaw! Code: %d\n", httpCode);
+    int httpCode = http.POST(jsonData);
+    
+    if (httpCode == HTTP_CODE_CREATED) {
+      Serial.println("Daten gesendet!");
     } else {
-      Serial.printf("Fehler: %s\n", http.errorToString(httpCode).c_str());
+      Serial.printf("Fehler: %d\n", httpCode);
     }
-    
     http.end();
   }
   delay(5000); // Alle 5 Sekunden senden
