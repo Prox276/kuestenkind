@@ -1,3 +1,11 @@
+/**
+ * Kuestenkind - server component
+ * @author Deiras
+ * @created 27.06.2025
+ * @lastUpdated 27.06.2025
+ * Update:
+ */
+
 import { Request, Response, Router, NextFunction, RequestHandler } from 'express';
 import { Database } from 'sqlite';
 import * as sensorController from '../controllers/sensorController';

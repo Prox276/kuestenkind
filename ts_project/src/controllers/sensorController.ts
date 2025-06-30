@@ -1,3 +1,11 @@
+/**
+ * Kuestenkind - server component
+ * @author Deiras
+ * @created 27.06.2025
+ * @lastUpdated 27.06.2025
+ * Update:
+ */
+
 import { Database } from 'sqlite';
 import { Measurement } from '../models/Measurement';
 

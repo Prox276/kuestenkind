@@ -1,3 +1,10 @@
+/**
+ * Kuestenkind - server component
+ * @author Deiras
+ * @created 27.06.2025
+ * @lastUpdated 30.06.2025
+ * Update: Changed UTC to localtime
+ */
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 
@@ -15,7 +22,7 @@ export async function setupDB() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       temperature REAL NOT NULL,
       ph REAL NOT NULL,
-      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+      timestamp DATETIME DEFAULT (datetime('now', 'localtime'))
     )
   `);
   return db;
