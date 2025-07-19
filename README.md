@@ -139,7 +139,7 @@ Daten abfragen (Frontend):
 2. Server nicht erreichbar:
 - IP-Adresse des Servers bestätigen
 - Firewall-Einstellungen prüfen (Port 3000)
-- Server laufen lassen mit npm run dev
+- Server laufen lassen mit npx nodemon src/server.ts
 3. Ungültige Sensordaten:
 - Sensorverbindungen prüfen
 - Kalibrierung durchführen
